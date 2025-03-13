@@ -1,5 +1,6 @@
 import { Page, test } from "@playwright/test";
 
+// maybe a weakmap is better to allow garbage collection for extremely high number of page objects
 const pageInstances = new Map<number, Page>();
 
 export function setPage(page: Page, workerIndex: number) {
