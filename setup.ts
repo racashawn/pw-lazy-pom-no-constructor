@@ -1,20 +1,29 @@
-import { test as base, Page } from "@playwright/test";
+import { test as base, Page, BrowserContext } from "@playwright/test";
 import { setPage, clearPage } from "./globalPageContext";
 
-export const test = base.extend<{ page: Page }>({
-  page: async ({ page }, use, testInfo) => {
-    setPage(page, testInfo.workerIndex); // Store the correct page before running the test
-    console.log(`setPage() called for worker ${testInfo.workerIndex}`);
+export const test = base.extend<{ page: Page; context: BrowserContext }>({
+  context: async ({ browser }, use) => {
+    // console.log("Creating a new browser context...");
+    const context = await browser.newContext();
+    await use(context);
+    // console.log("Browser context closed.");
+  },
 
-    await use(page); // Run the test
-
-    clearPage(testInfo.workerIndex); // Clean up after the test
-    console.log(`clearPage() called for worker ${testInfo.workerIndex}`);
+  page: async ({ context }, use, testInfo) => {
+    // console.log(`Creating a new page for test ${testInfo.testId}...`);
+    const page = await context.newPage();
+    await use(page);
   },
 });
 
-// Add a test hook to ensure `setPage()` runs before any test starts
+// Ensures `setPage()` runs before every test
 test.beforeEach(async ({ page }, testInfo) => {
-  console.log(`beforeEach: Ensuring setPage() runs before tests`);
-  setPage(page, testInfo.workerIndex);
+  // console.log(`Before Each: Ensuring setPage() runs for test ${testInfo.testId}`);
+  setPage(page, testInfo.testId);
+});
+
+// Ensures `clearPage()` runs after every test
+test.afterEach(async ({}, testInfo) => {
+  // console.log(`After Each: Ensuring clearPage() runs for test ${testInfo.testId}`);
+  clearPage(testInfo.testId);
 });
