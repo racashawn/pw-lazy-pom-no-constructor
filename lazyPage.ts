@@ -4,7 +4,6 @@ export function lazyPage<T>(PageObject: new () => T): () => T {
     if (!instance) {
       instance = new PageObject();
     }
-    console.log(instance);
     return instance;
   };
 }
