@@ -30,26 +30,20 @@
 The globalPageContext.ts file manages page instances for parallel test execution:
 ```
 // filepath: [globalPageContext.ts](http://_vscodecontentref_/7)
-import { Page, test } from "@playwright/test";
+import { Page } from "@playwright/test";
 
-const pageInstances = new Map<number, Page>();
+let currentPage: Page | null = null;
 
-export function setPage(page: Page, workerIndex: number) {
-  console.log(`✅ Setting page for worker ${workerIndex}`);
-  pageInstances.set(workerIndex, page);
+export function setPage(page: Page) {
+  console.log(`✅ setPage() called with a new page instance`);
+  currentPage = page;
 }
 
 export function getPage(): Page {
-  const workerIndex = test.info().workerIndex;
-  console.log(`🔹 Getting page for worker ${workerIndex}`);
-  
-  const page = pageInstances.get(workerIndex);
-  if (!page) {
-    console.error(`❌ ERROR: No page found for worker ${workerIndex}!`);
-    throw new Error("❌ Page is not set. Call setPage(page) first.");
+  if (!currentPage) {
+    throw new Error("🚨 No active page instance found! Ensure 'setPage()' is called before accessing the page.");
   }
-
-  return page;
+  return currentPage;
 }
 ```
 
@@ -57,25 +51,23 @@ export function getPage(): Page {
 The setup.ts file extends Playwright's test object to manage page instances:
 ```
 import { test as base, Page } from "@playwright/test";
-import { setPage, clearPage } from "./globalPageContext";
+import { setPage } from "./globalPageContext";
 
 export const test = base.extend<{ page: Page }>({
-  page: async ({ page }, use, testInfo) => {
-    setPage(page, testInfo.workerIndex); // ✅ Store the correct page before running the test
-    console.log(`✅ setPage() called for worker ${testInfo.workerIndex}`);
-
-    await use(page); // ✅ Run the test
-
-    clearPage(testInfo.workerIndex); // ✅ Clean up after the test
-    console.log(`🧹 clearPage() called for worker ${testInfo.workerIndex}`);
+  page: async ({ browser }, use) => {
+    const page = await browser.newPage();
+    console.log("🔥 [setup.ts] Setting up new page instance");
+    await use(page);
   },
+
+
 });
 
-// ✅ Add a test hook to ensure `setPage()` runs before any test starts
-test.beforeEach(async ({ page }, testInfo) => {
-  console.log(`🔥 beforeEach: Ensuring setPage() runs before tests`);
-  setPage(page, testInfo.workerIndex);
+test.beforeEach(async ({ page }) => {
+  console.log(`🔥 [setup.ts] Creating new page for test: ${test.info().title}`);
+  setPage(page);
 });
+
 ```
 
 ## Page Objects
