@@ -1,55 +1,55 @@
 import { test } from "../setup";
 import { homePage } from "../page-objects/homePage";
-import { installationPage } from "../page-objects/installationPage";
-import { testConfigurationPage } from "../page-objects/testConfigurationPage";
+import { getStartedPage } from "../page-objects/getStartedPage";
+import { apiPage } from "../page-objects/apiPage";
 
-test.beforeEach(async () => {
-  console.log("Before each test");
+test("test1", async () => {
+  await homePage().navigateToHomepage();
+  await getStartedPage().getStarted();
+  await getStartedPage().clickApiLink();
+  await apiPage().isOnApiPage();
+  await apiPage().clickChromium();
+  await homePage().navigateToHomepage();
+  await getStartedPage().getStarted();
+  await getStartedPage().clickApiLink();
+  await apiPage().isOnApiPage();
+  await apiPage().clickChromium();
+  await homePage().navigateToHomepage();
+  await getStartedPage().getStarted();
+  await getStartedPage().clickApiLink();
+  await apiPage().isOnApiPage();
+  await apiPage().clickChromium();
 });
 
-test("Test 1", async () => {
+test("test2", async () => {
   await homePage().navigateToHomepage();
-  await homePage().clickGetStarted();
-  await installationPage().clickOnAllLinks();
+  await getStartedPage().getStarted();
+  await getStartedPage().clickApiLink();
+  await apiPage().isOnApiPage();
   await homePage().navigateToHomepage();
-  await homePage().clickGetStarted();
-  await installationPage().clickOnAllLinks();
+  await getStartedPage().getStarted();
+  await getStartedPage().clickApiLink();
+  await apiPage().isOnApiPage();
   await homePage().navigateToHomepage();
-  await homePage().clickGetStarted();
-  await installationPage().clickOnAllLinks();
+  await getStartedPage().getStarted();
+  await getStartedPage().clickApiLink();
+  await apiPage().isOnApiPage();
 });
 
-test("Test2", async () => {
+test("test4", async () => {
   await homePage().navigateToHomepage();
-  await homePage().clickGetStarted();
-  await installationPage().clickOnAllLinks();
-  await testConfigurationPage().checkHeaderVisibility();
+  await getStartedPage().getStarted();
+  await getStartedPage().clickApiLink();
+  //   await getPage().pause()
+  await apiPage().isOnApiPage();
   await homePage().navigateToHomepage();
-  await homePage().clickGetStarted();
-  await installationPage().clickOnAllLinks();
-  await testConfigurationPage().checkHeaderVisibility();
+  await getStartedPage().getStarted();
+  await getStartedPage().clickApiLink();
+  //   await getPage().pause()
+  await apiPage().isOnApiPage();
   await homePage().navigateToHomepage();
-  await homePage().clickGetStarted();
-  await installationPage().clickOnAllLinks();
-  await testConfigurationPage().checkHeaderVisibility();
-});
-
-test("Test 3", async () => {
-  await homePage().navigateToHomepage();
-  await homePage().clickGetStarted();
-  await installationPage().clickOnAllLinks();
-  await homePage().navigateToHomepage();
-  await homePage().clickGetStarted();
-  await installationPage().clickOnAllLinks();
-  await homePage().navigateToHomepage();
-  await homePage().clickGetStarted();
-  await installationPage().clickOnAllLinks();await homePage().navigateToHomepage();
-  await homePage().clickGetStarted();
-  await installationPage().clickOnAllLinks();
-  await homePage().navigateToHomepage();
-  await homePage().clickGetStarted();
-  await installationPage().clickOnAllLinks();
-  await homePage().navigateToHomepage();
-  await homePage().clickGetStarted();
-  await installationPage().clickOnAllLinks();
+  await getStartedPage().getStarted();
+  await getStartedPage().clickApiLink();
+  //   await getPage().pause()
+  await apiPage().isOnApiPage();
 });
