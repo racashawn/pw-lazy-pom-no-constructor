@@ -81,13 +81,13 @@ class InstallationPage {
     whatsInstalled: () => getPage().getByRole("link", { name: "What's Installed" }).nth(2)
   };
 
-  //or as members of the class
+  //or as members of the class as function expression
   testConfigurationLink = () => getPage().getByRole("link", { name: "Test configuration" });
   //etc
 
 
   //methods
-  clickOnAllLinks = async () => { //fat arrow function
+  clickOnAllLinks = async () => { 
     await this.sidePanel.introductionLink().click();
     await this.sidePanel.whatsInstalled().click();
     await this.sidePanel.installPwLink().click();
