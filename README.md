@@ -1,14 +1,13 @@
 
-# 🎭 Playwright Lazy POM - No Constructor
+# 🎭 [EXPERIMENT] Playwright Lazy POM 
 
-🚀 A TypeScript-based Playwright automation framework that eliminates the need for constructors in Page Objects and automatically lazy-loads pages while maintaining parallel execution safety.
+🚀 An experiment of a TypeScript-based Playwright automation framework that eliminates the need for constructors in Page Objects and automatically lazy-loads pages while maintaining parallel execution safety.
 
 ## 📌 Key Features
 
 - ✅ No constructors needed in Page Objects
 - ✅ Lazy instantiation – Pages are only created when accessed
 - ✅ Fully parallel-safe – Works with multiple test workers
-- ✅ Automatic session handling – Supports storageState for authentication
 - ✅ Simplified test syntax – No need to pass page manually
 ```
 /project-root
@@ -18,6 +17,7 @@
  │    ├── TestConfigurationPage.ts
  ├── /tests                # Test files
  │    ├── example.spec.ts
+      ├── others
  ├── globalPageContext.ts  # Manages Playwright pages per test worker
  ├── lazyPage.ts           # Lazy page loader
  ├── setup.ts              # Playwright fixture setup
@@ -29,7 +29,6 @@
 ## Global Page Context
 The globalPageContext.ts file manages page instances for parallel test execution:
 ```
-// filepath: [globalPageContext.ts](http://_vscodecontentref_/7)
 import { Page } from "@playwright/test";
 
 let currentPage: Page | null = null;
@@ -54,14 +53,15 @@ import { test as base, Page } from "@playwright/test";
 import { setPage } from "./globalPageContext";
 
 // Extend the base test fixture with our page handling
-export const test = base.extend<{ page: Page }>({
-  page: async ({ browser }, use) => {
-    await use(await browser.newPage());
-  },
+export const test = base.extend<{ setupPage: void }>({
+  setupPage: [async ({ page }, use) => {
+    console.log("[setup.ts] Automatically setting up page instance");
+    setPage(page);
+    await use();
+    console.log("[setup.ts] Automatically closing page instance");
+    await page.close();
+  }, { auto: true }],
 });
-
-// Set the page instance before each test
-test.beforeEach(async ({ page }) => setPage(page));
 
 ```
 
